@@ -235,6 +235,7 @@ td:not(:last-child) {
 /* Effet hover sur les lignes du tableau */
 tbody tr:hover {
     background-color: #5a5a5a;
+    cursor: pointer;
 }
 
 /* Suppression de la bordure inférieure sur la dernière ligne */
