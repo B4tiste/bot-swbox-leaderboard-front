@@ -22,48 +22,40 @@
                     <th @click="sort('score_eff')" class="clickable">
                         <div class="header-content">
                             <span>Score Eff</span>
-                            <span class="arrow">
-                                {{
-                                    sortColumn === "score_eff"
-                                        ? sortOrder === "desc"
-                                            ? "⬇"
-                                            : "⬆"
-                                        : " "
-                                }}
-                            </span>
+                            <!-- Afficher la flèche uniquement sur la colonne active -->
+                            <span
+                                v-if="sortColumn === 'score_eff'"
+                                class="arrow"
+                                :class="{ rotated: sortOrder === 'desc' }"
+                                >⬆</span
+                            >
                         </div>
                     </th>
                     <th @click="sort('score_spd')" class="clickable">
                         <div class="header-content">
                             <span>Score Spd</span>
-                            <span class="arrow">
-                                {{
-                                    sortColumn === "score_spd"
-                                        ? sortOrder === "desc"
-                                            ? "⬇"
-                                            : "⬆"
-                                        : " "
-                                }}
-                            </span>
+                            <span
+                                v-if="sortColumn === 'score_spd'"
+                                class="arrow"
+                                :class="{ rotated: sortOrder === 'desc' }"
+                                >⬆</span
+                            >
                         </div>
                     </th>
                     <th @click="sort('total')" class="clickable">
                         <div class="header-content">
                             <span>Total</span>
-                            <span class="arrow">
-                                {{
-                                    sortColumn === "total"
-                                        ? sortOrder === "desc"
-                                            ? "⬇"
-                                            : "⬆"
-                                        : " "
-                                }}
-                            </span>
+                            <span
+                                v-if="sortColumn === 'total'"
+                                class="arrow"
+                                :class="{ rotated: sortOrder === 'desc' }"
+                                >⬆</span
+                            >
                         </div>
                     </th>
                 </tr>
             </thead>
-            <!-- Utilisation de transition-group avec tag="tbody" pour animer les déplacements -->
+            <!-- Transition-group pour animer les déplacements -->
             <transition-group tag="tbody" name="row">
                 <tr
                     v-for="player in sortedLeaderboard"
@@ -106,10 +98,11 @@ export default {
     data() {
         return {
             leaderboard: [],
-            sortColumn: "total",
+            // Par défaut, on commence par score_eff et ordre ascendant
+            sortColumn: "score_eff",
             sortOrder: "asc",
             loading: true,
-            searchQuery: "", // Nouvelle propriété pour la recherche
+            searchQuery: "",
         };
     },
     created() {
@@ -129,7 +122,7 @@ export default {
             });
     },
     computed: {
-        // Filtre la liste en fonction de la barre de recherche
+        // Filtre le leaderboard selon la recherche sur le pseudo
         filteredLeaderboard() {
             if (!this.searchQuery) return this.leaderboard;
             return this.leaderboard.filter((player) =>
@@ -138,7 +131,7 @@ export default {
                     .includes(this.searchQuery.toLowerCase())
             );
         },
-        // Trie la liste filtrée
+        // Trie le leaderboard filtré
         sortedLeaderboard() {
             return this.filteredLeaderboard.slice().sort((a, b) => {
                 const modifier = this.sortOrder === "desc" ? -1 : 1;
@@ -152,11 +145,12 @@ export default {
     },
     methods: {
         sort(column) {
+            // Si la colonne cliquée est la même, on inverse l'ordre
             if (this.sortColumn === column) {
                 this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
             } else {
+                // Sinon, on change la colonne tout en gardant l'ordre actuel
                 this.sortColumn = column;
-                this.sortOrder = "desc";
             }
         },
         handlePlayerClick(player) {
@@ -219,11 +213,15 @@ export default {
 
 .arrow {
     display: block;
-    height: 20px;
     font-size: 2em;
-    line-height: 20px;
     margin-top: 5px;
+    transition: transform 0.3s ease;
     color: #28a745;
+}
+
+/* Rotation de 180° pour l'ordre décroissant */
+.arrow.rotated {
+    transform: rotate(180deg);
 }
 
 @keyframes spin {
@@ -279,13 +277,12 @@ td:not(:last-child) {
     border-right: 2px solid #3a3a3a;
 }
 
-/* Effet hover sur les lignes cliquables uniquement */
+/* Hover sur les lignes cliquables */
 tr.clickable-row:hover {
     background-color: #5a5a5a;
     cursor: pointer;
 }
 
-/* Pas d'effet sur les lignes non-cliquables */
 tr.non-clickable-row:hover {
     background-color: inherit;
     cursor: default;
