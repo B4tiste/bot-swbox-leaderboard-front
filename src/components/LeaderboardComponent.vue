@@ -1,6 +1,16 @@
 <template>
     <div class="leaderboard">
         <h1>BOT-SWBOX JSON SCORE LEADERBOARD</h1>
+
+        <!-- Barre de recherche -->
+        <div class="search-bar">
+            <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Rechercher un pseudo..."
+            />
+        </div>
+
         <!-- Loader -->
         <div id="loader" class="loader" v-if="loading"></div>
         <table v-else>
@@ -53,7 +63,7 @@
                     </th>
                 </tr>
             </thead>
-            <!-- Utilisation de transition-group avec tag="tbody" -->
+            <!-- Utilisation de transition-group avec tag="tbody" pour animer les déplacements -->
             <transition-group tag="tbody" name="row">
                 <tr
                     v-for="player in sortedLeaderboard"
@@ -99,6 +109,7 @@ export default {
             sortColumn: "total",
             sortOrder: "asc",
             loading: true,
+            searchQuery: "", // Nouvelle propriété pour la recherche
         };
     },
     created() {
@@ -118,8 +129,18 @@ export default {
             });
     },
     computed: {
+        // Filtre la liste en fonction de la barre de recherche
+        filteredLeaderboard() {
+            if (!this.searchQuery) return this.leaderboard;
+            return this.leaderboard.filter((player) =>
+                player.pseudo
+                    .toLowerCase()
+                    .includes(this.searchQuery.toLowerCase())
+            );
+        },
+        // Trie la liste filtrée
         sortedLeaderboard() {
-            return this.leaderboard.slice().sort((a, b) => {
+            return this.filteredLeaderboard.slice().sort((a, b) => {
                 const modifier = this.sortOrder === "desc" ? -1 : 1;
                 if (a[this.sortColumn] < b[this.sortColumn])
                     return 1 * modifier;
@@ -162,6 +183,21 @@ export default {
     margin-bottom: 20px;
 }
 
+/* Barre de recherche */
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    width: 300px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
 /* Loader */
 .loader {
     border: 8px solid #f3f3f3;
@@ -178,13 +214,11 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* Optionnel : fixer une hauteur minimale pour éviter le redimensionnement */
     min-height: 50px;
 }
 
 .arrow {
     display: block;
-    /* Fixe une hauteur afin de réserver l'espace, même sans contenu */
     height: 20px;
     font-size: 2em;
     line-height: 20px;
@@ -251,13 +285,13 @@ tr.clickable-row:hover {
     cursor: pointer;
 }
 
-/* Pas d'effet sur les lignes non cliquables */
+/* Pas d'effet sur les lignes non-cliquables */
 tr.non-clickable-row:hover {
     background-color: inherit;
     cursor: default;
 }
 
-/* Style pour la cellule pseudo afin d'afficher l'icône */
+/* Style pour la cellule pseudo */
 .pseudo-cell {
     display: flex;
     align-items: center;
@@ -275,6 +309,11 @@ tbody tr:last-child td {
     border-bottom: none;
 }
 
+/* Animation pour le déplacement des lignes */
+.row-move {
+    transition: transform 0.5s;
+}
+
 /* Footer */
 footer {
     text-align: center;
@@ -282,9 +321,5 @@ footer {
     padding: 10px;
     background-color: #1e1e1e;
     color: #fff;
-}
-
-.row-move {
-    transition: transform 0.5s;
 }
 </style>
