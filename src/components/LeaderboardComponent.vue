@@ -72,7 +72,7 @@
                         <span
                             v-if="player.apparitionsCount > 1"
                             class="clickable-icon"
-                            >➔</span
+                            >📈</span
                         >
                     </td>
                     <td>{{ player.date }}</td>
