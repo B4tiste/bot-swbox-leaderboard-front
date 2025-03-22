@@ -16,9 +16,9 @@
                                 {{
                                     sortColumn === "score_eff"
                                         ? sortOrder === "desc"
-                                            ? "↓"
-                                            : "↑"
-                                        : ""
+                                            ? "⬇"
+                                            : "⬆"
+                                        : " "
                                 }}
                             </span>
                         </div>
@@ -30,9 +30,9 @@
                                 {{
                                     sortColumn === "score_spd"
                                         ? sortOrder === "desc"
-                                            ? "↓"
-                                            : "↑"
-                                        : ""
+                                            ? "⬇"
+                                            : "⬆"
+                                        : " "
                                 }}
                             </span>
                         </div>
@@ -44,9 +44,9 @@
                                 {{
                                     sortColumn === "total"
                                         ? sortOrder === "desc"
-                                            ? "↓"
-                                            : "↑"
-                                        : ""
+                                            ? "⬇"
+                                            : "⬆"
+                                        : " "
                                 }}
                             </span>
                         </div>
@@ -57,15 +57,24 @@
                 <tr
                     v-for="player in sortedLeaderboard"
                     :key="player.id"
+                    :class="{
+                        'clickable-row': player.apparitionsCount > 1,
+                        'non-clickable-row': player.apparitionsCount <= 1,
+                    }"
                     @click="
-                        $router.push({
-                            name: 'PlayerDetail',
-                            params: { id: player.id },
-                        })
+                        player.apparitionsCount > 1 && handlePlayerClick(player)
                     "
                 >
                     <td>{{ player.id }}</td>
-                    <td>{{ player.pseudo }}</td>
+                    <td class="pseudo-cell">
+                        {{ player.pseudo }}
+                        <!-- Icône indiquant que la ligne est cliquable -->
+                        <span
+                            v-if="player.apparitionsCount > 1"
+                            class="clickable-icon"
+                            >➔</span
+                        >
+                    </td>
                     <td>{{ player.date }}</td>
                     <td>{{ player.score_eff }}</td>
                     <td>{{ player.score_spd }}</td>
@@ -87,7 +96,6 @@ export default {
     data() {
         return {
             leaderboard: [],
-            // Tri par défaut sur la colonne "total"
             sortColumn: "total",
             sortOrder: "asc",
             loading: true,
@@ -97,7 +105,7 @@ export default {
         axios
             .get(`${process.env.VUE_APP_API_URL}/leaderboard`)
             .then((response) => {
-                // On suppose que la réponse est { leaderboard: [...] }
+                // On suppose que chaque joueur possède la propriété 'apparitionsCount'
                 this.leaderboard = response.data.leaderboard;
             })
             .catch((error) => {
@@ -125,13 +133,17 @@ export default {
     methods: {
         sort(column) {
             if (this.sortColumn === column) {
-                // Inverse l'ordre si on clique deux fois sur la même colonne
                 this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
             } else {
-                // Change de colonne et applique l'ordre décroissant par défaut
                 this.sortColumn = column;
                 this.sortOrder = "desc";
             }
+        },
+        handlePlayerClick(player) {
+            this.$router.push({
+                name: "PlayerDetail",
+                params: { id: player.id },
+            });
         },
     },
 };
@@ -162,7 +174,25 @@ export default {
     margin: 20px auto;
 }
 
-/* Animation du loader */
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Optionnel : fixer une hauteur minimale pour éviter le redimensionnement */
+    min-height: 50px;
+}
+
+.arrow {
+    display: block;
+    /* Fixe une hauteur afin de réserver l'espace, même sans contenu */
+    height: 20px;
+    font-size: 2em;
+    line-height: 20px;
+    margin-top: 5px;
+    color: #28a745;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -190,7 +220,7 @@ thead th {
     text-align: center;
 }
 
-/* Pour les colonnes cliquables uniquement */
+/* Colonnes cliquables */
 thead th.clickable {
     cursor: pointer;
     user-select: none;
@@ -199,22 +229,6 @@ thead th.clickable {
 
 thead th.clickable:hover {
     background-color: #4a4a4a;
-}
-
-/* Contenu des en-têtes avec texte et flèche arrangés verticalement */
-.header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Flèche : fixe en largeur pour éviter le redimensionnement et agrandie */
-.arrow {
-    display: inline-block;
-    width: 20px;
-    font-size: 1.5em;
-    line-height: 1;
-    margin-top: 4px;
 }
 
 /* Cellules du tableau */
@@ -226,19 +240,38 @@ td {
     text-align: center;
 }
 
-/* Délimitation verticale de 2px entre les colonnes */
+/* Séparation verticale */
 th:not(:last-child),
 td:not(:last-child) {
     border-right: 2px solid #3a3a3a;
 }
 
-/* Effet hover sur les lignes du tableau */
-tbody tr:hover {
+/* Effet hover sur les lignes cliquables uniquement */
+tr.clickable-row:hover {
     background-color: #5a5a5a;
     cursor: pointer;
 }
 
-/* Suppression de la bordure inférieure sur la dernière ligne */
+/* Pas d'effet sur les lignes non cliquables */
+tr.non-clickable-row:hover {
+    background-color: inherit;
+    cursor: default;
+}
+
+/* Style pour la cellule pseudo afin d'afficher l'icône */
+.pseudo-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clickable-icon {
+    margin-left: 8px;
+    font-size: 1.2em;
+    color: #28a745;
+}
+
+/* Suppression de la bordure sur la dernière ligne */
 tbody tr:last-child td {
     border-bottom: none;
 }

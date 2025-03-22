@@ -1,5 +1,8 @@
 <template>
     <div class="player-detail">
+        <!-- Bouton de retour -->
+        <button class="back-button" @click="goBack">Retour</button>
+
         <h1>Player Detail - {{ playerData?.player?.pseudo || "N/A" }}</h1>
         <!-- Loader -->
         <div id="loader" class="loader" v-if="loading"></div>
@@ -27,12 +30,10 @@ export default {
         };
     },
     mounted() {
-        // Récupère l'ID du joueur depuis les paramètres de la route
         const playerId = this.$route.params.id;
         axios
             .get(`${process.env.VUE_APP_API_URL}/playerDetail/${playerId}`)
             .then((response) => {
-                // On suppose que la réponse est au format { player: { ... } }
                 this.playerData = response.data;
             })
             .catch((error) => {
@@ -42,7 +43,6 @@ export default {
                 );
             })
             .finally(() => {
-                // On définit loading à false, puis on attend que le DOM soit mis à jour avant de créer le graphique
                 this.loading = false;
                 this.$nextTick(() => {
                     this.createChart();
@@ -53,7 +53,6 @@ export default {
         createChart() {
             if (!this.playerData || !this.playerData.player) return;
             const apparitions = this.playerData.player.apparitions;
-            // Extraction des données pour le graphique
             const labels = apparitions.map((item) => item.date);
             const scoreEff = apparitions.map((item) => item.score_eff);
             const scoreSpd = apparitions.map((item) => item.score_spd);
@@ -74,7 +73,7 @@ export default {
                             data: scoreEff,
                             borderColor: "#28a745",
                             backgroundColor: "rgba(40, 167, 69, 0.2)",
-                            fill: false, // Désactive le remplissage
+                            fill: false,
                             tension: 0.2,
                         },
                         {
@@ -82,7 +81,7 @@ export default {
                             data: scoreSpd,
                             borderColor: "#ff5733",
                             backgroundColor: "rgba(255, 87, 51, 0.2)",
-                            fill: false, // Désactive le remplissage
+                            fill: false,
                             tension: 0.2,
                         },
                     ],
@@ -109,6 +108,14 @@ export default {
                 },
             });
         },
+        // Méthode pour revenir en arrière
+        goBack() {
+            // Option 1: Utiliser $router.back() pour revenir à la page précédente
+            // this.$router.back();
+
+            // Option 2: Naviguer directement vers la leaderboard
+            this.$router.push({ name: "Leaderboard" });
+        },
     },
 };
 </script>
@@ -122,13 +129,28 @@ export default {
     color: #fff;
 }
 
+/* Style du bouton retour */
+.back-button {
+    margin-bottom: 15px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #218838;
+}
+
 .player-detail h1 {
     text-align: center;
     color: #28a745;
     margin-bottom: 20px;
 }
 
-/* Définition de la taille du canvas pour le graphique */
 #scoreChart {
     width: 100%;
     height: 400px;
