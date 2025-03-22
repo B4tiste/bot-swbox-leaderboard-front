@@ -4,6 +4,7 @@
         <button class="back-button" @click="goBack">Retour</button>
 
         <h1>Player Detail - {{ playerData?.player?.pseudo || "N/A" }}</h1>
+
         <!-- Loader -->
         <div id="loader" class="loader" v-if="loading"></div>
         <!-- Graph s'affiche quand le chargement est terminé -->
@@ -33,9 +34,28 @@ export default {
         const playerId = this.$route.params.id;
         axios
             .get(`${process.env.VUE_APP_API_URL}/playerDetail/${playerId}`)
+            // Dans le bloc .then, pour définir le pseudo du joueur à partir de l'apparition la plus récente
             .then((response) => {
-                this.playerData = response.data;
+                const data = response.data;
+                if (
+                    data.player &&
+                    data.player.apparitions &&
+                    data.player.apparitions.length > 0
+                ) {
+                    // Trier les apparitions par date décroissante pour récupérer la plus récente
+                    data.player.apparitions.sort((a, b) => {
+                        const [dayA, monthA, yearA] = a.date.split("-");
+                        const [dayB, monthB, yearB] = b.date.split("-");
+                        const dateA = new Date(yearA, monthA - 1, dayA);
+                        const dateB = new Date(yearB, monthB - 1, dayB);
+                        return dateB - dateA;
+                    });
+                    // Affecter le pseudo de l'apparition la plus récente
+                    data.player.pseudo = data.player.apparitions[0].pseudo;
+                }
+                this.playerData = data;
             })
+
             .catch((error) => {
                 console.error(
                     "Erreur lors de la récupération des détails du joueur:",
@@ -52,10 +72,20 @@ export default {
     methods: {
         createChart() {
             if (!this.playerData || !this.playerData.player) return;
-            const apparitions = this.playerData.player.apparitions;
-            const labels = apparitions.map((item) => item.date);
-            const scoreEff = apparitions.map((item) => item.score_eff);
-            const scoreSpd = apparitions.map((item) => item.score_spd);
+            // Trier en ordre croissant (les plus anciennes en premier)
+            const apparitionsSorted = this.playerData.player.apparitions
+                .slice()
+                .sort((a, b) => {
+                    const [dayA, monthA, yearA] = a.date.split("-");
+                    const [dayB, monthB, yearB] = b.date.split("-");
+                    const dateA = new Date(yearA, monthA - 1, dayA);
+                    const dateB = new Date(yearB, monthB - 1, dayB);
+                    return dateA - dateB;
+                });
+
+            const labels = apparitionsSorted.map((item) => item.date);
+            const scoreEff = apparitionsSorted.map((item) => item.score_eff);
+            const scoreSpd = apparitionsSorted.map((item) => item.score_spd);
 
             const canvas = document.getElementById("scoreChart");
             if (!canvas) {
