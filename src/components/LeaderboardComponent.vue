@@ -53,7 +53,8 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <!-- Utilisation de transition-group avec tag="tbody" -->
+            <transition-group tag="tbody" name="row">
                 <tr
                     v-for="player in sortedLeaderboard"
                     :key="player.id"
@@ -68,7 +69,6 @@
                     <td>{{ player.id }}</td>
                     <td class="pseudo-cell">
                         {{ player.pseudo }}
-                        <!-- Icône indiquant que la ligne est cliquable -->
                         <span
                             v-if="player.apparitionsCount > 1"
                             class="clickable-icon"
@@ -80,7 +80,7 @@
                     <td>{{ player.score_spd }}</td>
                     <td>{{ player.total }}</td>
                 </tr>
-            </tbody>
+            </transition-group>
         </table>
         <footer>
             <p>By <strong>B4tiste</strong> (@b4tiste on Discord)</p>
@@ -105,7 +105,6 @@ export default {
         axios
             .get(`${process.env.VUE_APP_API_URL}/leaderboard`)
             .then((response) => {
-                // On suppose que chaque joueur possède la propriété 'apparitionsCount'
                 this.leaderboard = response.data.leaderboard;
             })
             .catch((error) => {
@@ -283,5 +282,9 @@ footer {
     padding: 10px;
     background-color: #1e1e1e;
     color: #fff;
+}
+
+.row-move {
+    transition: transform 0.5s;
 }
 </style>
