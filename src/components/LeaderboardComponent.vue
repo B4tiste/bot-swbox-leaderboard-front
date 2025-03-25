@@ -1,6 +1,10 @@
 <template>
     <div class="leaderboard">
         <h1>BOT-SWBOX JSON SCORE LEADERBOARD</h1>
+        <h2>
+            ⚠️ Only the scores are stored, JSON files are not uploaded to the
+            Database ⚠️
+        </h2>
 
         <!-- Barre de recherche -->
         <div class="search-bar">
@@ -172,6 +176,12 @@ export default {
 }
 
 .leaderboard h1 {
+    text-align: center;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.leaderboard h2 {
     text-align: center;
     color: #28a745;
     margin-bottom: 20px;
