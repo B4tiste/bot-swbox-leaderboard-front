@@ -84,8 +84,10 @@ export default {
                 });
 
             const labels = apparitionsSorted.map((item) => item.date);
-            const scoreEff = apparitionsSorted.map((item) => item.score_eff);
-            const scoreSpd = apparitionsSorted.map((item) => item.score_spd);
+            const scoreRtaEff = apparitionsSorted.map((item) => item.rta_eff);
+            const scoreSiegeEff = apparitionsSorted.map((item) => item.siege_eff);
+            const scoreRtaSpd = apparitionsSorted.map((item) => item.rta_spd);
+            const scoreSiegeSpd = apparitionsSorted.map((item) => item.siege_spd);
 
             const canvas = document.getElementById("scoreChart");
             if (!canvas) {
@@ -99,20 +101,28 @@ export default {
                     labels: labels,
                     datasets: [
                         {
-                            label: "Score Eff",
-                            data: scoreEff,
+                            label: "Score RTA Eff%",
+                            data: scoreRtaEff,
                             borderColor: "#28a745",
                             backgroundColor: "rgba(40, 167, 69, 0.2)",
-                            fill: false,
-                            tension: 0.2,
                         },
                         {
-                            label: "Score Spd",
-                            data: scoreSpd,
-                            borderColor: "#ff5733",
-                            backgroundColor: "rgba(255, 87, 51, 0.2)",
-                            fill: false,
-                            tension: 0.2,
+                            label: "Score Siege Eff%",
+                            data: scoreSiegeEff,
+                            borderColor: "#007bff",
+                            backgroundColor: "rgba(0, 123, 255, 0.2)",
+                        },
+                        {
+                            label: "Score RTA Spd",
+                            data: scoreRtaSpd,
+                            borderColor: "#ffc107",
+                            backgroundColor: "rgba(255, 193, 7, 0.2)",
+                        },
+                        {
+                            label: "Score Siege Spd",
+                            data: scoreSiegeSpd,
+                            borderColor: "#dc3545",
+                            backgroundColor: "rgba(220, 53, 69, 0.2)",
                         },
                     ],
                 },

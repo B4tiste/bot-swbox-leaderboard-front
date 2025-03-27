@@ -23,34 +23,47 @@
                     <th class="non-clickable">ID</th>
                     <th class="non-clickable">Pseudo</th>
                     <th class="non-clickable">JSON Date</th>
-                    <th @click="sort('score_eff')" class="clickable">
+                    <th @click="sort('score_rta_eff')" class="clickable">
                         <div class="header-content">
-                            <span>Score Eff</span>
+                            <span>Score Eff% RTA</span>
                             <!-- Afficher la flèche uniquement sur la colonne active -->
                             <span
-                                v-if="sortColumn === 'score_eff'"
+                                v-if="sortColumn === 'score_rta_eff'"
                                 class="arrow"
                                 :class="{ rotated: sortOrder === 'desc' }"
                                 >⬆</span
                             >
                         </div>
                     </th>
-                    <th @click="sort('score_spd')" class="clickable">
+                    <th @click="sort('score_siege_eff')" class="clickable">
                         <div class="header-content">
-                            <span>Score Spd</span>
+                            <span>Score Eff% Siege</span>
+                            <!-- Afficher la flèche uniquement sur la colonne active -->
                             <span
-                                v-if="sortColumn === 'score_spd'"
+                                v-if="sortColumn === 'score_siege_eff'"
                                 class="arrow"
                                 :class="{ rotated: sortOrder === 'desc' }"
                                 >⬆</span
                             >
                         </div>
                     </th>
-                    <th @click="sort('total')" class="clickable">
+                    <th @click="sort('score_rta_spd')" class="clickable">
                         <div class="header-content">
-                            <span>Total</span>
+                            <span>Score Speed RTA</span>
                             <span
-                                v-if="sortColumn === 'total'"
+                                v-if="sortColumn === 'score_rta_spd'"
+                                class="arrow"
+                                :class="{ rotated: sortOrder === 'desc' }"
+                                >⬆</span
+                            >
+                        </div>
+                    </th>
+                    <th @click="sort('score_siege_spd')" class="clickable">
+                        <div class="header-content">
+                            <span>Score Speed Siege</span>
+                            <!-- Afficher la flèche uniquement sur la colonne active -->
+                            <span
+                                v-if="sortColumn === 'score_siege_spd'"
                                 class="arrow"
                                 :class="{ rotated: sortOrder === 'desc' }"
                                 >⬆</span
@@ -82,9 +95,10 @@
                         >
                     </td>
                     <td>{{ player.date }}</td>
-                    <td>{{ player.score_eff }}</td>
-                    <td>{{ player.score_spd }}</td>
-                    <td>{{ player.total }}</td>
+                    <td>{{ player.score_rta_eff }}</td>
+                    <td>{{ player.score_siege_eff }}</td>
+                    <td>{{ player.score_rta_spd }}</td>
+                    <td>{{ player.score_siege_spd }}</td>
                 </tr>
             </transition-group>
         </table>
@@ -103,7 +117,7 @@ export default {
         return {
             leaderboard: [],
             // Par défaut, on commence par score_eff et ordre ascendant
-            sortColumn: "score_eff",
+            sortColumn: "score_rta_eff",
             sortOrder: "asc",
             loading: true,
             searchQuery: "",
