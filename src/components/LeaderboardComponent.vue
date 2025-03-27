@@ -292,6 +292,7 @@ td {
     border-bottom: 1px solid #3a3a3a;
     transition: background-color 0.3s ease;
     text-align: center;
+    font-size: 1.5em;
 }
 
 /* Séparation verticale */
