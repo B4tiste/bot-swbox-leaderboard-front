@@ -20,7 +20,6 @@
         <table v-else>
             <thead>
                 <tr>
-                    <th class="non-clickable">ID</th>
                     <th class="non-clickable">Pseudo</th>
                     <th class="non-clickable">JSON Date</th>
                     <th @click="sort('score_rta_eff')" class="clickable">
@@ -78,18 +77,17 @@
                     v-for="player in sortedLeaderboard"
                     :key="player.id"
                     :class="{
-                        'clickable-row': player.apparitionsCount > 1,
-                        'non-clickable-row': player.apparitionsCount <= 1,
+                        'clickable-row': player.apparitionsCount > 1 && !player.anonyme,
+                        'non-clickable-row': player.apparitionsCount <= 1 || player.anonyme,
                     }"
                     @click="
-                        player.apparitionsCount > 1 && handlePlayerClick(player)
+                        player.apparitionsCount > 1 && !player.anonyme && handlePlayerClick(player)
                     "
                 >
-                    <td>{{ player.id }}</td>
                     <td class="pseudo-cell">
-                        {{ player.pseudo }}
+                        {{ player.anonyme ? "HIDDEN" : player.pseudo }}
                         <span
-                            v-if="player.apparitionsCount > 1"
+                            v-if="player.apparitionsCount > 1 && !player.anonyme"
                             class="clickable-icon"
                             >📈</span
                         >
