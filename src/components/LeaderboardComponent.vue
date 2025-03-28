@@ -77,17 +77,23 @@
                     v-for="player in sortedLeaderboard"
                     :key="player.id"
                     :class="{
-                        'clickable-row': player.apparitionsCount > 1 && !player.anonyme,
-                        'non-clickable-row': player.apparitionsCount <= 1 || player.anonyme,
+                        'clickable-row':
+                            player.apparitionsCount > 1 && !player.anonyme,
+                        'non-clickable-row':
+                            player.apparitionsCount <= 1 || player.anonyme,
                     }"
                     @click="
-                        player.apparitionsCount > 1 && !player.anonyme && handlePlayerClick(player)
+                        player.apparitionsCount > 1 &&
+                            !player.anonyme &&
+                            handlePlayerClick(player)
                     "
                 >
                     <td class="pseudo-cell">
                         {{ player.anonyme ? "HIDDEN" : player.pseudo }}
                         <span
-                            v-if="player.apparitionsCount > 1 && !player.anonyme"
+                            v-if="
+                                player.apparitionsCount > 1 && !player.anonyme
+                            "
                             class="clickable-icon"
                             >📈</span
                         >
@@ -292,7 +298,7 @@ td {
     border-bottom: 1px solid #3a3a3a;
     transition: background-color 0.3s ease;
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.1em;
 }
 
 /* Séparation verticale */
