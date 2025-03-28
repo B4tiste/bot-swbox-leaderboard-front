@@ -20,12 +20,13 @@
         <table v-else>
             <thead>
                 <tr>
+                    <!-- New Rank column -->
+                    <th class="non-clickable">Rank</th>
                     <th class="non-clickable">Pseudo</th>
                     <th class="non-clickable">JSON Date</th>
                     <th @click="sort('score_rta_eff')" class="clickable">
                         <div class="header-content">
                             <span>Score Eff% RTA</span>
-                            <!-- Afficher la flèche uniquement sur la colonne active -->
                             <span
                                 v-if="sortColumn === 'score_rta_eff'"
                                 class="arrow"
@@ -37,7 +38,6 @@
                     <th @click="sort('score_siege_eff')" class="clickable">
                         <div class="header-content">
                             <span>Score Eff% Siege</span>
-                            <!-- Afficher la flèche uniquement sur la colonne active -->
                             <span
                                 v-if="sortColumn === 'score_siege_eff'"
                                 class="arrow"
@@ -60,7 +60,6 @@
                     <th @click="sort('score_siege_spd')" class="clickable">
                         <div class="header-content">
                             <span>Score Speed Siege</span>
-                            <!-- Afficher la flèche uniquement sur la colonne active -->
                             <span
                                 v-if="sortColumn === 'score_siege_spd'"
                                 class="arrow"
@@ -74,20 +73,26 @@
             <!-- Transition-group pour animer les déplacements -->
             <transition-group tag="tbody" name="row">
                 <tr
-                    v-for="player in sortedLeaderboard"
+                    v-for="(player, index) in sortedLeaderboard"
                     :key="player.id"
-                    :class="{
-                        'clickable-row':
-                            player.apparitionsCount > 1 && !player.anonyme,
-                        'non-clickable-row':
-                            player.apparitionsCount <= 1 || player.anonyme,
-                    }"
+                    :class="[
+                        {
+                            gold: index === 0,
+                            silver: index === 1,
+                            bronze: index === 2,
+                        },
+                        player.apparitionsCount > 1 && !player.anonyme
+                            ? 'clickable-row'
+                            : 'non-clickable-row',
+                    ]"
                     @click="
                         player.apparitionsCount > 1 &&
                             !player.anonyme &&
                             handlePlayerClick(player)
                     "
                 >
+                    <!-- Rank cell -->
+                    <td>{{ index + 1 }}</td>
                     <td class="pseudo-cell">
                         {{ player.anonyme ? "HIDDEN" : player.pseudo }}
                         <span
@@ -313,7 +318,8 @@ tr.clickable-row:hover {
 }
 
 tr.non-clickable-row:hover {
-    background-color: inherit;
+    /* add a small "opacity" */
+    background-color: #3a3a3a;
     cursor: default;
 }
 
@@ -347,5 +353,18 @@ footer {
     padding: 10px;
     background-color: #1e1e1e;
     color: #fff;
+}
+
+/* Highlighting for top three ranks with 50% transparency */
+.gold {
+    background-color: rgba(255, 215, 0, 0.5);
+}
+
+.silver {
+    background-color: rgba(192, 192, 192, 0.5);
+}
+
+.bronze {
+    background-color: rgba(205, 127, 50, 0.5);
 }
 </style>
