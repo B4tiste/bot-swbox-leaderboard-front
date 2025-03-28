@@ -263,6 +263,7 @@ export default {
 
 /* Base du tableau */
 table {
+    width: 100%;
     border-collapse: collapse;
     background-color: #1e1e1e;
     border-radius: 8px;
