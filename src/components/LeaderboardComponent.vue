@@ -73,14 +73,10 @@
             <!-- Transition-group pour animer les déplacements -->
             <transition-group tag="tbody" name="row">
                 <tr
-                    v-for="(player, index) in sortedLeaderboard"
+                    v-for="player in sortedLeaderboard"
                     :key="player.id"
                     :class="[
-                        {
-                            gold: index === 0,
-                            silver: index === 1,
-                            bronze: index === 2,
-                        },
+                        getRankColorClass(player),
                         player.apparitionsCount > 1 && !player.anonyme
                             ? 'clickable-row'
                             : 'non-clickable-row',
@@ -92,7 +88,14 @@
                     "
                 >
                     <!-- Rank cell -->
-                    <td>{{ index + 1 }}</td>
+                    <td>
+                        {{
+                            fullSortedLeaderboard.findIndex(
+                                (p) => p.id === player.id
+                            ) + 1
+                        }}
+                    </td>
+                    <!-- Pseudo cell -->
                     <td class="pseudo-cell">
                         {{ player.anonyme ? "HIDDEN" : player.pseudo }}
                         <span
@@ -125,7 +128,6 @@ export default {
     data() {
         return {
             leaderboard: [],
-            // Par défaut, on commence par score_eff et ordre ascendant
             sortColumn: "score_rta_eff",
             sortOrder: "asc",
             loading: true,
@@ -149,7 +151,18 @@ export default {
             });
     },
     computed: {
-        // Filtre le leaderboard selon la recherche sur le pseudo
+        // Liste complète triée (non filtrée)
+        fullSortedLeaderboard() {
+            return this.leaderboard.slice().sort((a, b) => {
+                const modifier = this.sortOrder === "desc" ? -1 : 1;
+                if (a[this.sortColumn] < b[this.sortColumn])
+                    return 1 * modifier;
+                if (a[this.sortColumn] > b[this.sortColumn])
+                    return -1 * modifier;
+                return 0;
+            });
+        },
+        // Liste filtrée selon la recherche sur le pseudo
         filteredLeaderboard() {
             if (!this.searchQuery) return this.leaderboard;
             return this.leaderboard.filter((player) =>
@@ -158,7 +171,7 @@ export default {
                     .includes(this.searchQuery.toLowerCase())
             );
         },
-        // Trie le leaderboard filtré
+        // Liste filtrée et triée pour l'affichage
         sortedLeaderboard() {
             return this.filteredLeaderboard.slice().sort((a, b) => {
                 const modifier = this.sortOrder === "desc" ? -1 : 1;
@@ -172,13 +185,24 @@ export default {
     },
     methods: {
         sort(column) {
-            // Si la colonne cliquée est la même, on inverse l'ordre
             if (this.sortColumn === column) {
                 this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
             } else {
-                // Sinon, on change la colonne tout en gardant l'ordre actuel
                 this.sortColumn = column;
             }
+        },
+        getRankColorClass(player) {
+            // On calcule la position globale du joueur (1 = premier, 2 = deuxième, 3 = troisième, etc.)
+            const globalRank =
+                this.fullSortedLeaderboard.findIndex(
+                    (p) => p.id === player.id
+                ) + 1;
+
+            if (globalRank === 1) return "gold";
+            if (globalRank === 2) return "silver";
+            if (globalRank === 3) return "bronze";
+            // Au-delà du top 3, pas de couleur
+            return "";
         },
         handlePlayerClick(player) {
             this.$router.push({
