@@ -85,9 +85,13 @@ export default {
 
             const labels = apparitionsSorted.map((item) => item.date);
             const scoreRtaEff = apparitionsSorted.map((item) => item.rta_eff);
-            const scoreSiegeEff = apparitionsSorted.map((item) => item.siege_eff);
+            const scoreSiegeEff = apparitionsSorted.map(
+                (item) => item.siege_eff
+            );
             const scoreRtaSpd = apparitionsSorted.map((item) => item.rta_spd);
-            const scoreSiegeSpd = apparitionsSorted.map((item) => item.siege_spd);
+            const scoreSiegeSpd = apparitionsSorted.map(
+                (item) => item.siege_spd
+            );
 
             const canvas = document.getElementById("scoreChart");
             if (!canvas) {
@@ -167,6 +171,8 @@ export default {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     color: #fff;
+    width: 75%;
+    margin: 0 auto;
 }
 
 /* Style du bouton retour */
