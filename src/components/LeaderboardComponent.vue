@@ -1,6 +1,13 @@
 <template>
     <div class="leaderboard">
-        <h1>BOT-SWBOX JSON SCORE LEADERBOARD</h1>
+        <h1>
+            BOT-SWBOX JSON SCORE LEADERBOARD
+            <!-- Bouton redirigeant vers la page de stats -->
+            <button @click="$router.push({ name: 'Stats' })" class="stats-btn">
+                📊 Stats nerd button 📊
+            </button>
+        </h1>
+
         <h2>
             ⚠️ Only the scores are stored, JSON files are not uploaded to the
             Database ⚠️
@@ -20,7 +27,6 @@
         <table v-else>
             <thead>
                 <tr>
-                    <!-- New Rank column -->
                     <th class="non-clickable">Rank</th>
                     <th class="non-clickable">Pseudo</th>
                     <th class="non-clickable">JSON Date</th>
@@ -87,7 +93,6 @@
                             handlePlayerClick(player)
                     "
                 >
-                    <!-- Rank cell -->
                     <td>
                         {{
                             fullSortedLeaderboard.findIndex(
@@ -95,7 +100,6 @@
                             ) + 1
                         }}
                     </td>
-                    <!-- Pseudo cell -->
                     <td class="pseudo-cell">
                         {{ player.anonyme ? "HIDDEN" : player.pseudo }}
                         <span
@@ -226,12 +230,31 @@ export default {
     text-align: center;
     color: #28a745;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* espace entre le titre et le bouton */
 }
 
 .leaderboard h2 {
     text-align: center;
     color: #28a745;
     margin-bottom: 20px;
+}
+
+/* Bouton Stats */
+.stats-btn {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+.stats-btn:hover {
+    background-color: #218838;
 }
 
 /* Barre de recherche */
