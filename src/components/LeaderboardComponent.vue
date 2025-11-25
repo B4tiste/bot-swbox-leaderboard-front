@@ -63,7 +63,7 @@
                                     <span
                                         v-if="sortColumn === 'score_rta_eff'"
                                         class="arrow"
-                                        :class="{ rotated: sortOrder === 'desc' }"
+                                        :class="{ rotated: sortOrder === 'asc' }"
                                     >
                                         ⬆
                                     </span>
