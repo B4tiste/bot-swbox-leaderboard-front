@@ -1,6 +1,7 @@
 <template>
     <div class="leaderboard-page">
         <div class="leaderboard-card">
+
             <!-- Header -->
             <header class="leaderboard-header">
                 <div class="title-block">
@@ -18,7 +19,7 @@
                 </button>
             </header>
 
-            <!-- Alert / info line -->
+            <!-- Alert -->
             <div class="info-banner">
                 ⚠️ Only scores are stored. JSON files are <strong>not</strong> uploaded to the database.
             </div>
@@ -131,7 +132,7 @@
                             <td class="rank-col">
                                 {{
                                     fullSortedLeaderboard.findIndex(
-                                        (p) => p.id === player.id
+                                        p => p.id === player.id
                                     ) + 1
                                 }}
                             </td>
@@ -149,19 +150,16 @@
                                 </span>
                             </td>
 
-                            <td class="date-col">
-                                {{ player.date }}
-                            </td>
-
+                            <td class="date-col">{{ player.date }}</td>
                             <td>{{ player.score_rta_eff }}</td>
                             <td>{{ player.score_siege_eff }}</td>
                             <td>{{ player.score_rta_spd }}</td>
                             <td>{{ player.score_siege_spd }}</td>
                         </tr>
                     </transition-group>
+
                 </table>
 
-                <!-- Empty state -->
                 <div v-if="!sortedLeaderboard.length" class="empty-state">
                     <p>No players match this search yet.</p>
                 </div>
@@ -170,27 +168,33 @@
             <!-- Footer -->
             <footer class="leaderboard-footer">
                 <p>
-                    By <strong>B4tiste</strong> (<span class="discord-tag">@b4tiste</span> on Discord)
+                    By <strong>B4tiste</strong>
+                    (<span class="discord-tag">@b4tiste</span> on Discord)
                 </p>
             </footer>
+
         </div>
     </div>
 </template>
+
+
 
 <script>
 import axios from "axios";
 
 export default {
     name: "LeaderboardComponent",
+
     data() {
         return {
             leaderboard: [],
             sortColumn: "score_rta_eff",
-            sortOrder: "desc", // default to highest first
+            sortOrder: "desc", // works correctly now
             loading: true,
             searchQuery: "",
         };
     },
+
     created() {
         axios
             .get(`${process.env.VUE_APP_API_URL}/leaderboard`)
@@ -198,17 +202,14 @@ export default {
                 this.leaderboard = response.data.leaderboard;
             })
             .catch((error) => {
-                console.error(
-                    "Erreur lors de la récupération du leaderboard:",
-                    error
-                );
+                console.error("Erreur lors de la récupération du leaderboard:", error);
             })
             .finally(() => {
                 this.loading = false;
             });
     },
+
     computed: {
-        // Human-readable label for the current sort column
         readableSortColumn() {
             const map = {
                 score_rta_eff: "Eff% RTA",
@@ -219,56 +220,52 @@ export default {
             return map[this.sortColumn] || this.sortColumn;
         },
 
-        // Full sorted leaderboard (not filtered) - used to compute true rank
+        /* 🔥 Unified and corrected sorting logic */
         fullSortedLeaderboard() {
+            const dir = this.sortOrder === "asc" ? 1 : -1;
             return this.leaderboard.slice().sort((a, b) => {
-                const modifier = this.sortOrder === "desc" ? -1 : 1;
-                if (a[this.sortColumn] < b[this.sortColumn]) return 1 * modifier;
-                if (a[this.sortColumn] > b[this.sortColumn]) return -1 * modifier;
+                if (a[this.sortColumn] < b[this.sortColumn]) return -1 * dir;
+                if (a[this.sortColumn] > b[this.sortColumn]) return  1 * dir;
                 return 0;
             });
         },
 
-        // Filter by pseudo
         filteredLeaderboard() {
             if (!this.searchQuery) return this.leaderboard;
             return this.leaderboard.filter((player) =>
-                player.pseudo
-                    .toLowerCase()
-                    .includes(this.searchQuery.toLowerCase())
+                player.pseudo.toLowerCase().includes(this.searchQuery.toLowerCase())
             );
         },
 
-        // Filtered and sorted for display
         sortedLeaderboard() {
+            const dir = this.sortOrder === "asc" ? 1 : -1;
             return this.filteredLeaderboard.slice().sort((a, b) => {
-                const modifier = this.sortOrder === "desc" ? -1 : 1;
-                if (a[this.sortColumn] < b[this.sortColumn]) return 1 * modifier;
-                if (a[this.sortColumn] > b[this.sortColumn]) return -1 * modifier;
+                if (a[this.sortColumn] < b[this.sortColumn]) return -1 * dir;
+                if (a[this.sortColumn] > b[this.sortColumn]) return  1 * dir;
                 return 0;
             });
         },
     },
+
     methods: {
         sort(column) {
             if (this.sortColumn === column) {
                 this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
             } else {
                 this.sortColumn = column;
-                // keep current order, user can toggle
             }
         },
+
         getRankColorClass(player) {
             const globalRank =
-                this.fullSortedLeaderboard.findIndex(
-                    (p) => p.id === player.id
-                ) + 1;
+                this.fullSortedLeaderboard.findIndex((p) => p.id === player.id) + 1;
 
             if (globalRank === 1) return "gold";
             if (globalRank === 2) return "silver";
             if (globalRank === 3) return "bronze";
             return "";
         },
+
         handlePlayerClick(player) {
             this.$router.push({
                 name: "PlayerDetail",
