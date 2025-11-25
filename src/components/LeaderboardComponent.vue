@@ -38,8 +38,8 @@
                 <div class="sort-badge">
                     Sorting by:
                     <strong>{{ readableSortColumn }}</strong>
-                    <span v-if="sortOrder === 'desc'">⬇</span>
-                    <span v-else>⬆</span>
+                    <span v-if="sortOrder === 'desc'">⬆</span>
+                    <span v-else>⬇</span>
                 </div>
             </div>
 
